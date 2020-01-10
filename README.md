@@ -187,6 +187,42 @@ function isPromise(obj) {
     } 
     return false;
 }
+
+/**
+ * @desc 把路径转成树形结构
+ * @param {Array} ['/a/b/c','a/d/e']
+ * @return {Array} [{name:'a',children:[{name:'b',children:[{name:'c'}]},{name:'d',children:[{name:'e'}]}]}]
+ */
+
+function path2Tree(arr){
+   let rTree = [];
+    arr.forEach(item => {
+        let uri = item.replace(/^ |\//, '').split('/'); 
+        let uri_pt = rTree;
+        for (let i in uri) {
+            let treeItem = {
+                name: uri[i]
+            }
+            if (i != uri.length - 1) {
+                treeItem.children = [];
+            }
+            let isExist = false;
+            for (let j in uri_pt) {
+                if (uri_pt[j].name == treeItem.name) {
+                    uri_pt = (i == uri.length - 1 ? uri_pt : uri_pt[j].children);
+                    isExist = true;
+                    break;
+                }
+            }
+            if (!isExist) {
+                uri_pt.push(treeItem);
+                uri_pt = (i == uri.length - 1 ? uri_pt : uri_pt[uri_pt.length - 1].children);
+            }
+        }
+    })
+    return rTree;
+}
+
 export {
     currying,//函数柯里化
     throttle,//节流函数
@@ -199,5 +235,6 @@ export {
     trim,//去除字符串前后空格
     offset,//获取当前元素距离body的偏移量
     isPromise,//判断一个对象是不是promise
+    path2Tree,//把一个路径数组转成树形结构数组
 }
 ```
